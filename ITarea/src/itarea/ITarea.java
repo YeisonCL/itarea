@@ -17,8 +17,10 @@ public class ITarea {
      */
     public static void main(String[] args) 
     {
-        LoadAutomata hola = new LoadAutomata("/root/Desktop/hola.txt");
-        hola.cargar();
+        LoadAutomata hola = new LoadAutomata("/root/Desktop/ITarea/automata.txt");
+        hola.load();
+        AssessAutomata hola2 = new AssessAutomata("/root/Desktop/ITarea/entrada.txt");
+        hola2.start();
         // TODO code application logic here
     }
     

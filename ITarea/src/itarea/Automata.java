@@ -16,6 +16,7 @@ package itarea;
 // crearEstado(String pEstado)
 // setEstadoInicial(String pEstado)
 // setEstadoAceptador(String pEstado)
+// lineAsses(String pLine)
 // crearTransicion(String pEstadoInicial, String pEstadoFinal, String pValor)
 // De preferencia esta clase puede ser estatica pues sera general para todos.
 

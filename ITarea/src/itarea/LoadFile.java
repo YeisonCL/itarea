@@ -15,10 +15,11 @@ import java.io.*;
  */
 public class LoadFile 
 {
-    File _file;
-    FileReader _fileRead;
-    BufferedReader _readBuffer;
-    String _read = "";
+    private File _file;
+    private FileReader _fileRead;
+    private BufferedReader _readBuffer;
+    private String _read = "";
+    
     public String readFile(String pDirection)
     {
         try
@@ -37,10 +38,11 @@ public class LoadFile
             while(aux != null)
             //Este repite el proceso de lectura por si el archivo viene en varias lineas.
             {
-                _read = _read + aux;
+                _read = _read + aux+ "/";
                 aux = _readBuffer.readLine();
                 //Si la variable aux aún tiene datos se guardan sino se sale del ciclo.
             }
+            _read = _read + "*";
             //Se cierran los buffers.
             _readBuffer.close();
             _fileRead.close();
@@ -49,7 +51,7 @@ public class LoadFile
         catch(IOException e)
         {
             System.out.println("Error:" + e.getMessage());
-        }
+        }  
         return _read;
     }
 }

@@ -12,29 +12,30 @@ package itarea;
  */
 public class LoadAutomata 
 {
-    LoadFile _entryFile = new LoadFile();
-    String _readFile;
-    int _counter = 2;
+    private LoadFile _automataFile = new LoadFile();
+    private String _readFile;
+    private int _counter = 3;
     
-    LoadAutomata(String pDireccion)
+    LoadAutomata(String pDirection)
     {
-        _readFile = _entryFile.readFile(pDireccion);
+        _readFile = _automataFile.readFile(pDirection);
     }
     
-    public void cargar()
+    public void load()
     {
         createBeen(_readFile);
         setFinalBeen(_readFile);
         setTransition(_readFile);
         setAcceptBeen(_readFile);
+        _counter = 3;
     }
     
-    public void createBeen(String pLectura)
+    public void createBeen(String pRead)
     {
         String estate = "";
-        while (!"}".equals(Character.toString(pLectura.charAt(_counter))))
+        while (!"}".equals(Character.toString(pRead.charAt(_counter))))
         {
-            if (",".equals(Character.toString(pLectura.charAt(_counter))))
+            if (",".equals(Character.toString(pRead.charAt(_counter))))
             {
                 //Automata.crearEstado(estado); SI
                 System.out.println(estate);
@@ -43,7 +44,7 @@ public class LoadAutomata
             }
             else
             {
-                estate = estate + Character.toString(pLectura.charAt(_counter));
+                estate = estate + Character.toString(pRead.charAt(_counter));
                 _counter++;
             }
         }
@@ -56,17 +57,17 @@ public class LoadAutomata
         
     }
     
-    public void setFinalBeen(String pLectura)
+    public void setFinalBeen(String pRead)
     {
         String initialstate = "";
-        while(!"}".equals(Character.toString(pLectura.charAt(_counter))))
+        while(!"}".equals(Character.toString(pRead.charAt(_counter))))
         {
             _counter++;
         }
         _counter = _counter + 2;
-        while(!",".equals(Character.toString(pLectura.charAt(_counter))))
+        while(!",".equals(Character.toString(pRead.charAt(_counter))))
         {
-            initialstate = initialstate + Character.toString(pLectura.charAt(_counter));
+            initialstate = initialstate + Character.toString(pRead.charAt(_counter));
             _counter++;
         }
         //Automata.setEstadoInicial(estadoinicial); SI
@@ -76,32 +77,32 @@ public class LoadAutomata
         //NO
     }
     
-    public void setTransition(String pLectura)
+    public void setTransition(String pRead)
     {
         String beenone = "";
         String beentwo = "";
         String value = "";
         
-        while(!"}".equals(Character.toString(pLectura.charAt(_counter))))
+        while(!"}".equals(Character.toString(pRead.charAt(_counter))))
         {
-            if ("(".equals(Character.toString(pLectura.charAt(_counter))))
+            if ("(".equals(Character.toString(pRead.charAt(_counter))))
             {
                 _counter++;
-                while(!",".equals(Character.toString(pLectura.charAt(_counter))))
+                while(!",".equals(Character.toString(pRead.charAt(_counter))))
                 {
-                    beenone = beenone + Character.toString(pLectura.charAt(_counter));
+                    beenone = beenone + Character.toString(pRead.charAt(_counter));
                     _counter++;
                 }
                 _counter++;
-                while(!")".equals(Character.toString(pLectura.charAt(_counter))))
+                while(!")".equals(Character.toString(pRead.charAt(_counter))))
                 {
-                    value = value + Character.toString(pLectura.charAt(_counter));
+                    value = value + Character.toString(pRead.charAt(_counter));
                     _counter++;
                 }
                 _counter = _counter + 2;
-                while(!",".equals(Character.toString(pLectura.charAt(_counter))) && !"}".equals(Character.toString(pLectura.charAt(_counter))))
+                while(!",".equals(Character.toString(pRead.charAt(_counter))) && !"}".equals(Character.toString(pRead.charAt(_counter))))
                 {
-                    beentwo = beentwo + Character.toString(pLectura.charAt(_counter));
+                    beentwo = beentwo + Character.toString(pRead.charAt(_counter));
                     _counter++;
                 }
                 //NO
@@ -114,20 +115,20 @@ public class LoadAutomata
                 beentwo = "";
                 value = "";
             }
-            if(!"}".equals(Character.toString(pLectura.charAt(_counter))))
+            if(!"}".equals(Character.toString(pRead.charAt(_counter))))
             {
                 _counter++;
             }
         }
     }
     
-    public void setAcceptBeen(String pLectura)
+    public void setAcceptBeen(String pRead)
     {
         _counter = _counter + 3;
         String beenaccept = "";
-        while (!"}".equals(Character.toString(pLectura.charAt(_counter))))
+        while (!"}".equals(Character.toString(pRead.charAt(_counter))))
         {
-            if (",".equals(Character.toString(pLectura.charAt(_counter))))
+            if (",".equals(Character.toString(pRead.charAt(_counter))))
             {
                 //Automata.crearEstado(estado); SI
                 System.out.println(beenaccept);
@@ -136,7 +137,7 @@ public class LoadAutomata
             }
             else
             {
-                beenaccept = beenaccept + Character.toString(pLectura.charAt(_counter));
+                beenaccept = beenaccept + Character.toString(pRead.charAt(_counter));
                 _counter++;
             }
         }
