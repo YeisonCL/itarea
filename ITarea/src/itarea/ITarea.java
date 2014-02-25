@@ -21,6 +21,8 @@ public class ITarea {
         hola.load();
         AssessAutomata hola2 = new AssessAutomata("/root/Desktop/ITarea/entrada.txt");
         hola2.start();
+        AssessProductions hola3 = new AssessProductions("/root/Desktop/ITarea/entrada.txt", "/root/Desktop/ITarea/salida.txt","/root/Desktop/ITarea/producciones.txt");
+        hola3.start();
         // TODO code application logic here
     }
     

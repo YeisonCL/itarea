@@ -42,7 +42,6 @@ public class LoadFile
                 aux = _readBuffer.readLine();
                 //Si la variable aux aún tiene datos se guardan sino se sale del ciclo.
             }
-            _read = _read + "*";
             //Se cierran los buffers.
             _readBuffer.close();
             _fileRead.close();

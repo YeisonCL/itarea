@@ -30,7 +30,7 @@ public class LoadAutomata
         _counter = 3;
     }
     
-    public void createBeen(String pRead)
+    private void createBeen(String pRead)
     {
         String estate = "";
         while (!"}".equals(Character.toString(pRead.charAt(_counter))))
@@ -57,7 +57,7 @@ public class LoadAutomata
         
     }
     
-    public void setFinalBeen(String pRead)
+    private void setFinalBeen(String pRead)
     {
         String initialstate = "";
         while(!"}".equals(Character.toString(pRead.charAt(_counter))))
@@ -77,7 +77,7 @@ public class LoadAutomata
         //NO
     }
     
-    public void setTransition(String pRead)
+    private void setTransition(String pRead)
     {
         String beenone = "";
         String beentwo = "";
@@ -122,7 +122,7 @@ public class LoadAutomata
         }
     }
     
-    public void setAcceptBeen(String pRead)
+    private void setAcceptBeen(String pRead)
     {
         _counter = _counter + 3;
         String beenaccept = "";

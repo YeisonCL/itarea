@@ -19,12 +19,13 @@ public class AssessAutomata
     private SaveFile _exitFile = new SaveFile();
     private Queue _queue = new Queue();
     private String _readFile;
-    private int _counter = 1;
     
     AssessAutomata(String pDirection)
     {
         _readFile = _entryFile.readFile(pDirection);
+        //NO
         System.out.println(_readFile);
+        //NO
     }
     
     public void start()
@@ -32,48 +33,36 @@ public class AssessAutomata
         startAssess(_readFile);
         writeExitFile();
         _queue.clear();
-        _counter = 1;
     }
     
-    public void startAssess(String pRead)
+    private void startAssess(String pRead)
     {
-        String assess = "";
-        while (!"*".equals(Character.toString(pRead.charAt(_counter))))
+        boolean send = true;
+        String[] assess = pRead.split("/");
+        for (int i = 1; i < assess.length; i++) 
         {
-            if ("/".equals(Character.toString(pRead.charAt(_counter))))
+            //send = Automata.lineAsses(asses); SI
+            if (send == true)
             {
-                boolean send = false;
-                //send = Automata.lineAsses(asses); SI
-                if (send == true)
-                {
-                    _queue.enqueue("OK");
-                }
-                else
-                {
-                    _queue.enqueue(":-c");
-                }
-                //NO
-                System.out.println(assess);
-                //NO
-                assess = "";
-                _counter++;
+                _queue.enqueue("OK");
             }
             else
             {
-                assess = assess + Character.toString(pRead.charAt(_counter));
-                _counter++;
+                _queue.enqueue(":-c");
             }
         }
     }
     
-    public void writeExitFile()
+    private void writeExitFile()
     {
         String finalassess = "";
         while(!_queue.isEmpty())
         {
-            finalassess = finalassess + "\n" + _queue.dequeue();
+            finalassess = finalassess + _queue.dequeue() + "\n";
         }
         _exitFile.writeFile("/root/Desktop/ITarea/salida.txt", finalassess);
+        //NO
         System.out.println(finalassess);
+        //NO
     }
 }
