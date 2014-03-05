@@ -16,25 +16,27 @@ import structures.trees.BinarySearchTree;
  */
 public class State implements Comparable<State>{
     
-    private boolean                         _initial;           //If it is an initial state
-    private boolean                         _final;             //If it is a final state
-    private final String                    _id;                //The name of the state
-    private BinarySearchTree<ConnectionHandler>    _connectionsTree;   //The connections to other states by keys
-    
+    private boolean                             _initial;               //If it is an initial state
+    private boolean                             _final;                 //If it is a final state
+    private final String                        _id;                    //The name of the state
+    private BinarySearchTree<ConnectionHandler> _connectionsTree;       //The connections to other states by keys
+    private BinarySearchTree<ConnectionHandler> _inverseConnections;    //The connections from other states
     
     /**
-     * 
+     * Description. A state of an automata
      * 
      * @param pID Name of the state
      */
     public State(String pID){
         _connectionsTree = new BinarySearchTree<>();
+        _inverseConnections = new BinarySearchTree<>();
         _initial = false;
         _final = false;
         _id = pID;
     }
     
     /**
+     * Description. A state an automata
      * 
      * @param pID Name of the state
      * @param pIsInitial
@@ -63,6 +65,80 @@ public class State implements Comparable<State>{
             newConnection.addState(pState);
         }
     }
+    
+    /**
+     * Description. Use this method to add a connection from other state.
+     * 
+     * @param pState 
+     * @param pKey 
+     */
+    public void addInverseRelation(State pState, String pKey){
+        ConnectionHandler newConnection = new ConnectionHandler(pKey);
+        structures.trees.Node<ConnectionHandler> connection = _inverseConnections.search(newConnection);
+        if (connection != null){
+            connection.getValue().addState(pState);
+        } else {
+            _inverseConnections.insert(newConnection);
+            newConnection.addState(pState);
+        }
+    }
+    
+    public void eraseConnection(State pState, String pKey){
+        ConnectionHandler dummyHandler = new ConnectionHandler(pKey);
+        structures.trees.Node<ConnectionHandler> handler = _connectionsTree.search(dummyHandler);
+        if (handler != null){
+            handler.getValue().eraseState(pState);
+            pState.eraseInverseConnection(this, pKey);
+        }
+    }
+    
+    public void eraseInverseConnection(State pState, String pKey){
+        ConnectionHandler dummyHandler = new ConnectionHandler(pKey);
+        structures.trees.Node<ConnectionHandler> handler = _inverseConnections.search(dummyHandler);
+        if (handler != null){
+            handler.getValue().eraseState(pState);
+        }
+    }
+    
+    public void eraseMe(){
+        structures.trees.Node<ConnectionHandler> connections = _connectionsTree.getRoot();
+        structures.trees.Node<ConnectionHandler> inverse = _inverseConnections.getRoot();
+        if (connections != null){
+            eraseMeConnections(connections);
+        }
+        if (inverse != null){
+            eraseMeInverseConnections(inverse);
+        }
+        
+        
+    }
+       
+    private void eraseMeConnections (structures.trees.Node<ConnectionHandler> pNode){
+        if (pNode == null){
+            return;
+        }
+        structures.lineal.Node<State> iNode = pNode.getValue().getRelations().getHead();
+        while (iNode != null){
+            iNode.getValue().eraseInverseConnection(this, pNode.getValue().getKey());
+            iNode = iNode.getNext();
+        }
+        eraseMeConnections(pNode.getLeftChild());
+        eraseMeConnections(pNode.getRightChild());
+    }
+    
+    private void eraseMeInverseConnections (structures.trees.Node<ConnectionHandler> pNode){
+        if (pNode == null){
+            return;
+        }
+        structures.lineal.Node<State> iNode = pNode.getValue().getRelations().getHead();
+        while (iNode != null){
+            iNode.getValue().eraseConnection(this, pNode.getValue().getKey());
+            iNode = iNode.getNext();
+        }
+        eraseMeInverseConnections(pNode.getLeftChild());
+        eraseMeInverseConnections(pNode.getRightChild());
+    }
+    
     
     /**
      * Description. Set the initial property of the state
@@ -118,6 +194,12 @@ public class State implements Comparable<State>{
     public ConnectionHandler getConnection(String pKey){
         ConnectionHandler dummy = new ConnectionHandler(pKey);
         structures.trees.Node<ConnectionHandler> searched = _connectionsTree.search(dummy);
+        return (searched!=null)?searched.getValue():null;
+    }
+    
+    public ConnectionHandler getInverseConnection(String pKey){
+        ConnectionHandler dummy = new ConnectionHandler(pKey);
+        structures.trees.Node<ConnectionHandler> searched = _inverseConnections.search(dummy);
         return (searched!=null)?searched.getValue():null;
     }
     

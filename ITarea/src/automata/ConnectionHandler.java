@@ -27,6 +27,10 @@ public class ConnectionHandler implements Comparable<ConnectionHandler>{
         _relations = new SimpleLinkedList<>();
     }
     
+    public void eraseState(State pState){
+        _relations.erase(pState);
+    }
+    
     /**
      * Description. Add a state that correspond with this key
      * 

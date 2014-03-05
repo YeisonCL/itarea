@@ -19,6 +19,7 @@ import structures.trees.BinarySearchTree;
 
 public class Automata {
     private StackNodes<StateContainer> _evaluationStack;    //Stack where all the posibles paths in an evaluation are going to be save
+    private StackNodes<State> _pathStateQueue;                   //Stack of evaluated states
     private BinarySearchTree<State> _states;                //All the automata states
     private BinarySearchTree<String> _alphabet;             //The automata alphabet
     private State _initialState;                            //Initial state of the automata
@@ -39,9 +40,44 @@ public class Automata {
     
     private Automata(){
         _evaluationStack = new StackNodes<>();
+        _pathStateQueue = new StackNodes<>();
         _states = new BinarySearchTree<>();
         _alphabet = new BinarySearchTree<>();
         _initialState = null;
+    }
+    
+    public synchronized void eraseState(String pID){
+        if (_initialState.getID().compareTo(pID) != 0){
+            State dummyState = new State(pID);
+            structures.trees.Node<State> state = _states.search(dummyState);
+            if (state != null){
+                state.getValue().eraseMe();
+                _states.erase(state.getValue());
+            } else {
+                System.out.println("Error al borrar, estado no encontrado: "+pID);
+            }
+        } else {
+            //AQUI VA MENSAJE DE ERROR GUI, CAMBIE EL ESTADO INICIAL ANTES DE BORRAR
+        }
+    }
+    
+    public synchronized void eraseState(State pState){
+        if (_initialState.compareTo(pState) != 0){
+            pState.eraseMe();
+            _states.erase(pState);
+        } else {
+            //AQUI VA MENSAJE DE ERROR GUI, CAMBIE EL ESTADO INICIAL ANTES DE BORRAR
+        }
+    }
+    
+    public synchronized void eraseTransition(String pStartState, String pEndState, String pKey){
+        State dummyStart = new State(pStartState);
+        State dummyEnd = new State(pEndState);
+        structures.trees.Node<State> start = _states.search(dummyStart);
+        structures.trees.Node<State> end = _states.search(dummyEnd);
+        if (start != null){
+            start.getValue().eraseConnection(end.getValue(), pKey);
+        }
     }
     
     /**
@@ -140,8 +176,8 @@ public class Automata {
             System.out.println("State(s) not found in transition: " + pStartID + "->"+pEndID);
         } else {
             start.getValue().addRelation(end.getValue(), pValue);
+            end.getValue().addInverseRelation(start.getValue(), pValue);
         }
-        
     }
     
     /**
@@ -155,29 +191,44 @@ public class Automata {
     public synchronized boolean evaluate(String pChain){
         
         //We add the start node to the evaluation stack:
-        StateContainer container = new StateContainer(0, _initialState);
+        StateContainer container = new StateContainer(0, _initialState, null);
         _evaluationStack.push(container);        
         
         int index;
         while (!_evaluationStack.isEmpty()){ //If evaluation stack is empty is because all the elements have been checked
             
             container = _evaluationStack.pop(); //We get the next element to be evaluated
+            
+            checkParentInPath(container.getParent());
+            
             index = container.getIndex(); //This element have the corresponding index in the chain
             if (index == pChain.length()){ //If the index+1 is equals to the length means all chain have been evaluated
                 if (container.getState().isFinal()){ //If the state is final the chain is correct :D
                     _evaluationStack.clear();
+                    
+                    //AQUI VA INSTRUCCIÓN GUI PINTAR VERDE
+                    
                     return true;
+                    
+                } else {
+                    
+                    //AQUI VA INSTRUCCIÓN GUI PINTAR ROJO, ESPERAR, DESPINTAR
+                    
                 }
                 
             } else { //If we haven't check al chain add relations of the actual state to the stack to be evaluated
                 int finalIndex = findNextKey(pChain, index);
+                
+                //AQUI VA INSTRUCCIÓN GUI PINTAR AZUL ESTADO
+                
+                _pathStateQueue.push(container.getState()); //Add actual state to the path
                 
                 if (finalIndex != -1){ //If finalIndex == -1 is because there is no correspondency between nextKey and the alphabet
                     
                     String key = pChain.substring(index, finalIndex);
                     ConnectionHandler connection = container.getState().getConnection(key);
                     if (connection != null){
-                        addRelationsToStack(connection.getRelations(), finalIndex);
+                        addRelationsToStack(connection.getRelations(), finalIndex, container.getState());
                     }
                     
                 } else {
@@ -191,6 +242,23 @@ public class Automata {
         return false;
     }
     
+    private void checkParentInPath(State pParent){
+        if (pParent != null){
+            while (_pathStateQueue.top().compareTo(pParent) != 0){
+            //AQUI VA INSTRUCCIÓN GUI PARA DESPINTAR EL NODO
+            _pathStateQueue.pop();
+        }
+        }
+    }
+    
+    private void clearPathStack(){
+        State iState = _pathStateQueue.pop();
+        while (iState != null){
+            //AQUI VA INSTRUCCIÓN GUI PARA DESPINTAR EL CAMINO
+            iState = _pathStateQueue.pop();
+        }
+    }
+    
     /**
      * Description. Internal manage method, used in evaluate method. It adds a list of states to the _evaluationStack
      * variable that satisfies a character of the chain.
@@ -198,16 +266,17 @@ public class Automata {
      * @param pList List of states that are going to be added
      * @param pIndex Index of the current character
      */
-    private void addRelationsToStack(SimpleLinkedList<State> pList, int pIndex){
+    private void addRelationsToStack(SimpleLinkedList<State> pList, int pIndex, State pParent){
         structures.lineal.Node<State> iNode = pList.getHead();
         StateContainer iContainer;
         while (iNode != null){
-            iContainer = new StateContainer(pIndex, iNode.getValue());
+            iContainer = new StateContainer(pIndex, iNode.getValue(), pParent);
             _evaluationStack.push(iContainer);
             iNode = iNode.getNext();
         }
     }
     
+//    
 //    public static void main(String[] args) {
 //        Automata a = Automata.getInstance();
 //        
@@ -235,7 +304,9 @@ public class Automata {
 //        a.addTransition("s5", "s1", "a");
 //        a.addTransition("s1", "s3", "s");
 //        
+//        a.eraseState("s3");
+//        //a.eraseTransition("s1", "s3", "s");
 //        
-//        System.out.println(a.evaluate("acasaas4"));
+//        System.out.println(a.evaluate("acasaas"));
 //    }
 }
