@@ -1,2 +1,6 @@
-A->a
-B->ab
+MAMA->a
+HOLA->ab
+JAJA->aab
+NO->bb
+SIRVIO->b
+
